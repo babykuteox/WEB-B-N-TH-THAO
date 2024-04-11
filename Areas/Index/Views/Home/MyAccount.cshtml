@@ -1,0 +1,169 @@
+﻿
+@{
+    ViewBag.Title = "MyAccount";
+    Layout = "~/Areas/Index/Views/Shared/_Layout.cshtml";
+}
+
+<header class="header_wrap fixed-top header_with_topbar">
+    <div class="bottom_header dark_skin main_menu_uppercase">
+        <div class="container">
+            <nav class="navbar navbar-expand-lg">
+                <a class="navbar-brand font-weight-bold text-center" style="font-size:20px; color: #FF324D" href="@Url.Action("Index", "Index")">
+                    CỬA HÀNG <br /> GIA DỤNG
+                </a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-expanded="false">
+                    <span class="ion-android-menu"></span>
+                </button>
+                <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
+                    <ul class="navbar-nav">
+                        <li><a class="nav-link nav_item" href="@Url.Action("Index", "Index")">Trang chủ</a></li>
+                        <li><a class="nav-link nav_item" href="#">Liên hệ</a></li>
+                    </ul>
+                </div>
+                <ul class="navbar-nav attr-nav align-items-center">
+                    <li><a href="@Url.Action("Account", "Index")" class="nav-link"><i class="linearicons-user"></i></a></li>
+                    <li class="dropdown cart_dropdown">
+                        <a class="nav-link cart_trigger" href="#" data-toggle="dropdown"><i class="linearicons-cart"></i><span class="cart_count">@ViewBag.listCart.Count</span></a>
+                        <div class="cart_box dropdown-menu dropdown-menu-right">
+                            <ul class="cart_list">
+                                @{ double totalPrice = 0; }
+                                @foreach (var item in ViewBag.listCart)
+                                {
+                                    totalPrice += item.quantity * item.product.price;
+                                <li>
+                                    <a href="@Url.Action("Remove", "Index", new { id = @item.product.id, view = "cart" })" class="item_remove"><i class="ion-close"></i></a>
+                                    @{ String path = HttpContext.Current.Request.Url.ToString();
+                                        path = path.Substring(0, 29);
+                                        path = path + item.product.image_main;}
+                                    <a href="#"><img src="@path" alt="cart_thumb1">@item.product.name</a>
+                                    <span class="cart_quantity"> @item.quantity x <span class="cart_amount">@item.product.price.ToString("N0")</span><span class="price_symbole"> vnđ</span></span>
+                                </li>
+                                }
+                            </ul>
+                            <div class="cart_footer">
+                                <p class="cart_total"><strong>Tổng tiền sản phẩm:</strong> <span class="cart_price">@totalPrice.ToString("N0")</span><span class="price_symbole"> vnđ</span></p>
+                                <p class="cart_buttons"><a href="@Url.Action("Cart", "Index")" class="btn btn-fill-line view-cart">GIỎ HÀNG</a><a href="@Url.Action("CheckOut", "Index")" class="btn btn-fill-out checkout">THANH TOÁN</a></p>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</header>
+<div class="breadcrumb_section bg_gray page-title-mini">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <div class="page-title">
+                    <h1>Quản lý tài khoản</h1>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <ol class="breadcrumb justify-content-md-end">
+                    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Index")">Trang chủ</a></li>
+                    <li class="breadcrumb-item active">Quản lý tài khoản</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="main_content">
+    <div class="section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3 col-md-4">
+                    <div class="dashboard_menu">
+                        <ul class="nav nav-tabs flex-column" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="orders-tab" data-toggle="tab" href="#orders" role="tab" aria-controls="orders" aria-selected="false"><i class="ti-shopping-cart-full"></i>Đơn hàng</a>
+                            </li>                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="@Url.Action("Logout", "Login")"><i class="ti-lock"></i>Đăng xuất</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-9 col-md-8">
+                    <div class="tab-content dashboard_content">
+                        <div class="tab-pane fade active show" id="orders" role="tabpanel" aria-labelledby="orders-tab">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3>Đơn hàng</h3>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Mã đơn hàng</th>
+                                                    <th>Ngày đặt</th>
+                                                    <th>Trạng thái</th>
+                                                    <th>Sản phẩm</th>
+                                                    <th>Tổng tiền</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var item in ViewBag.bills)
+                                                {
+                                                    int i = 0;
+                                                    <tr>
+                                                        <td># @item.id</td>
+                                                        <td>@item.date_create</td>
+                                                        @{
+                                                            String status = "";
+                                                            switch (item.state)
+                                                            {
+                                                                case 0:
+                                                                    status = "Mới";
+                                                                    break;
+                                                                case 1:
+                                                                    status = "Đã xác nhận";
+                                                                    break;
+                                                                case 2:
+                                                                    status = "Đã hủy";
+                                                                    break;
+                                                                case 3:
+                                                                    status = "Đóng gói sản phẩm";
+                                                                    break;
+                                                                case 4:
+                                                                    status = "Đang chuyển hàng";
+                                                                    break;
+                                                                case 5:
+                                                                    status = "Thất bại";
+                                                                    break;
+                                                                case 6:
+                                                                    status = "Thành công";
+                                                                    break;
+                                                            }
+                                                        }
+                                                        <td class="text-danger">@status</td>
+                                                        <td>
+                                                            @foreach (var product_item in item.bill_detail)
+                                                            {
+                                                                i++;
+
+                                                                @product_item.product.name<span> - </span>
+                                                                @product_item.quantity <span> x </span>
+                                                                @product_item.product.price.ToString("N0") <span> vnđ</span>
+                                                                <br />
+                                                            }
+                                                        </td>
+                                                        <td>@item.total_price.ToString("N0") vnđ cho @i sản phẩm</td>
+
+                                                    </tr>
+                                                }
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>                                             
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

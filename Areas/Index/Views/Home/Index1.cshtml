@@ -1,0 +1,206 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Areas/Index/Views/Shared/_Layout.cshtml";
+}
+
+<header class="header_wrap fixed-top header_with_topbar">
+    <div class="bottom_header dark_skin main_menu_uppercase">
+        <div class="container">
+            <nav class="navbar navbar-expand-lg">
+                <a class="navbar-brand font-weight-bold text-center" style="font-size:20px; color: #FF324D" href="@Url.Action("Index", "Index")">
+                    CỬA HÀNG <br /> GIA DỤNG
+                </a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-expanded="false">
+                    <span class="ion-android-menu"></span>
+                </button>
+                <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
+                    <ul class="navbar-nav">
+                        <li><a class="nav-link nav_item" href="@Url.Action("Index", "Index")">Trang chủ</a></li>
+                        <li><a class="nav-link nav_item" href="#">Liên hệ</a></li>
+                    </ul>
+                </div>
+                <ul class="navbar-nav attr-nav align-items-center">
+                    <li><a href="@Url.Action("Account", "Index")" class="nav-link"><i class="linearicons-user"></i></a></li>
+                    <li class="dropdown cart_dropdown">
+                        <a class="nav-link cart_trigger" href="#" data-toggle="dropdown"><i class="linearicons-cart"></i><span class="cart_count">@ViewBag.listCart.Count</span></a>
+                        <div class="cart_box dropdown-menu dropdown-menu-right">
+                            <ul class="cart_list">
+                                @{ double totalPrice = 0; }
+                                @foreach (var item in ViewBag.listCart)
+                                {
+                                    totalPrice += item.quantity * item.product.price;
+                                <li>
+                                    <a href="@Url.Action("Remove", "Index", new { id = @item.product.id, view = "index" })" class="item_remove"><i class="ion-close"></i></a>
+                                    @{ String path = HttpContext.Current.Request.Url.ToString();
+                                        path = path.Substring(0, 29);
+                                        path = path + item.product.image_main;}
+                                    <a href="#"><img src="@path" alt="cart_thumb1">@item.product.name</a>
+                                    <span class="cart_quantity"> @item.quantity x <span class="cart_amount">@item.product.price.ToString("N0")</span><span class="price_symbole"> vnđ</span></span>
+                                </li>
+                                }
+                            </ul>
+                            <div class="cart_footer">
+                                <p class="cart_total"><strong>Tổng tiền sản phẩm:</strong> <span class="cart_price">@totalPrice.ToString("N0")</span><span class="price_symbole"> vnđ</span></p>
+                                <p class="cart_buttons"><a href="@Url.Action("Cart", "Index")" class="btn btn-fill-line view-cart">GIỎ HÀNG</a><a href="@Url.Action("CheckOut", "Index")" class="btn btn-fill-out checkout">THANH TOÁN</a></p>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+
+            </nav>
+        </div>
+    </div>
+</header>
+
+<div class="breadcrumb_section bg_gray page-title-mini">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <div class="page-title">
+                    <h1>Sản phẩm</h1>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <ol class="breadcrumb justify-content-md-end">
+                    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Index")">Trang chủ</a></li>
+                    <li class="breadcrumb-item active">Sản phẩm</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="main_content">
+    <div class="section">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="row align-items-center mb-4 pb-1">
+                        <div class="col-12">
+                            <div class="product_header">
+                                <div class="product_header_left">
+                                    @using (Html.BeginForm("Index", "Index", FormMethod.Get))
+                                    {
+                                    <div class="d-flex">
+                                        <div class="custom_select">
+                                            <select name="fillter" class="form-control form-control-sm">
+                                                <option value="">Tất cả</option>
+                                                @{ String old = ""; }
+                                                @foreach (var item in ViewBag.categories)
+                                                {
+                                                    if (@item.name != old)
+                                                    {
+                                                        <option value="@item.name">@item.name</option>
+                                                        old = @item.name;
+                                                    }
+                                                }
+                                            </select>
+                                        </div>
+
+                                        <input type="submit" class="btn btn-outline-info ml-3" value="Lọc" />
+                                    </div>
+                                    }
+                                </div>
+                                <div class="product_header_right">
+                                    <div class="products_view">
+                                        <a href="javascript:void(0);" class="shorting_icon grid"><i class="ti-view-grid"></i></a>
+                                        <a href="javascript:void(0);" class="shorting_icon list active"><i class="ti-layout-list-thumb"></i></a>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row shop_container list">
+                        @foreach (var item in ViewBag.items)
+                        {
+                            <div class="col-lg-3 col-md-4 col-6">
+                                <div class="product">
+                                    <div class="product_img">
+                                        <a href="@Url.Action("Detail", "Index", new {id = @item.id})">
+                                            @{ String path = HttpContext.Current.Request.Url.ToString();
+                                                path = path.Substring(0, 29);
+                                                path = path + item.image_main;}
+                                            <img src="@path" alt="product_img1">
+                                        </a>
+                                        <div class="product_action_box">
+                                            <ul class="list_none pr_action_btn">
+                                                <li class="add-to-cart"><a href="@Url.Action("Add", "Index", new {id = @item.id, quantity = 1, view = "index" })"><i class="icon-basket-loaded"></i> Add To Cart</a></li>
+                                                <li><a href="shop-compare.html" class="popup-ajax"><i class="icon-shuffle"></i></a></li>
+                                                <li><a href="shop-quick-view.html" class="popup-ajax"><i class="icon-magnifier-add"></i></a></li>
+                                                <li><a href="#"><i class="icon-heart"></i></a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="product_info">
+                                        <h6 class="product_title">
+                                            @Html.ActionLink((string)@item.name, "Detail", "Index", new { id = item.id }, null)
+                                        </h6>
+                                        <div class="product_price">
+                                            <span class="price">@item.price.ToString("N0") vnđ</span>
+                                        </div>
+                                        <div class="pr_desc">
+                                            <p>@item.detail</p>
+                                        </div>
+                                        <div class="list_product_action_box">
+                                            <ul class="list_none pr_action_btn">
+                                                <li class="add-to-cart"><a href="@Url.Action("Add", "Index", new {id = @item.id, quantity = 1, view = "index" })"><i class="icon-basket-loaded"></i> Thêm vào giỏ hàng</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <ul class="pagination mt-3 justify-content-center pagination_style1">
+                                @{
+                                    int position;
+                                    int pageCurrent = ViewBag.pageCurrent;
+                                    string txtSearch = ViewBag.txtSearch;
+                                    string fillter = ViewBag.fillter;
+                                    float numSize = ViewBag.numSize;
+                                    if (pageCurrent > 1)
+                                    {
+                                        <li class="page-item">
+                                            <a class="page-link" href="@Url.Action("Index", "Index", new { txtSearch = (txtSearch != "" ? txtSearch : null), fillter = (fillter != "" ? fillter : null), page = pageCurrent-1 })" tabindex="-1">
+                                                <i class="linearicons-arrow-left"></i>
+                                                <span class="sr-only">Previous</span>
+                                            </a>
+                                        </li>
+                                    }
+
+                                    for (position = 1; position <= numSize; position++)
+                                    {
+
+                                        if (position == pageCurrent)
+                                        {
+                                            <li class="page-item active"><a class="page-link" href="@Url.Action("Index", "Index", new { txtSearch = (txtSearch != "" ? txtSearch : null), fillter = (fillter != "" ? fillter : null), page = position })">@position</a></li>
+                                        }
+
+                                        else
+                                        {
+                                            <li class="page-item"><a class="page-link" href="@Url.Action("Index", "Index", new { txtSearch = (txtSearch != "" ? txtSearch : null), fillter = (fillter != "" ? fillter : null), page = position })">@position</a></li>
+                                        }
+
+                                    }
+                                    if (pageCurrent > 0 && pageCurrent < numSize)
+                                    {
+                                        <li class="page-item">
+                                            <a class="page-link" href="@Url.Action("Index", "Index", new { txtSearch = (txtSearch != "" ? txtSearch : null), fillter = (fillter != "" ? fillter : null), page = pageCurrent+1 })" tabindex="-1">
+                                                <i class="linearicons-arrow-right"></i>
+                                                <span class="sr-only">Next</span>
+                                            </a>
+                                        </li>
+                                    }
+
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,122 @@
+﻿@model CNWEB.Models.customer
+
+@{
+    ViewBag.Title = "Register";
+    Layout = "~/Areas/Index/Views/Shared/_Layout.cshtml";
+    var selectList = new SelectList(
+        new List<SelectListItem>
+        {
+        new SelectListItem {Text = "Nam", Value = "Nam"},
+        new SelectListItem {Text = "Nữ", Value = "Nữ"},
+                    }, "Value", "Text");
+}
+<header class="header_wrap fixed-top header_with_topbar">
+    <div class="bottom_header dark_skin main_menu_uppercase">
+        <div class="container">
+            <nav class="navbar navbar-expand-lg">
+                <a class="navbar-brand font-weight-bold text-center" style="font-size:20px; color: #FF324D" href="@Url.Action("Index", "Index")">
+                    CỬA HÀNG <br /> GIA DỤNG
+                </a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-expanded="false">
+                    <span class="ion-android-menu"></span>
+                </button>
+                <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
+                    <ul class="navbar-nav">
+                        <li><a class="nav-link nav_item" href="@Url.Action("Index", "Index")">Trang chủ</a></li>
+                        <li><a class="nav-link nav_item" href="#">Liên hệ</a></li>
+                    </ul>
+                </div>
+           
+            </nav>
+        </div>
+    </div>
+</header>
+<div class="breadcrumb_section bg_gray page-title-mini">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <div class="page-title">
+                    <h1>Đăng ký</h1>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <ol class="breadcrumb justify-content-md-end">
+                    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Index")">Trang chủ</a></li>
+                    <li class="breadcrumb-item active">Đăng ký</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="main_content">
+    <div class="login_register_wrap section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-xl-6 col-md-10">
+                    <div class="login_wrap">
+                        <div class="padding_eight_all bg-white">
+                            <div class="heading_s1">
+                                <h3>Đăng ký tài khoản</h3>
+                            </div>
+                            @if (ViewBag.error != null)
+                            {
+                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                    <strong>@ViewBag.error</strong>
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                            }
+                            @using (Html.BeginForm("Regis", "regis", FormMethod.Post))
+                            {
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="account.auth" value="Khách hàng" />
+                                <input type="hidden" name="account.state" value="0" />
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.account.user_name, "Tài khoản", htmlAttributes: new { @class = "control-label col-md-5" })
+                                    @Html.EditorFor(model => model.account.user_name, new { htmlAttributes = new { @class = "form-control", autofocus = "", required = "required" } })
+                                    @Html.ValidationMessageFor(model => model.account.user_name, "", new { @class = "text-danger" })
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.account.password, "Mật khẩu", htmlAttributes: new { @class = "control-label col-md-5" })
+                                    @Html.EditorFor(model => model.account.password, new { htmlAttributes = new { @class = "form-control", type = "password", autofocus = "", required = "required"} })
+                                    @Html.ValidationMessageFor(model => model.account.password, "", new { @class = "text-danger" })
+                                </div>
+                                <div class="form-group">
+                                    <label for="confirm_password" class="control-label col-md-5">Xác nhận mật khẩu</label>
+                                    <input type="password" id="confirm_password" name="confirm_password" class="form-control" required="required" />
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.name, "Họ tên", htmlAttributes: new { @class = "control-label col-md-5" })
+                                    @Html.EditorFor(model => model.name, new { htmlAttributes = new { @class = "form-control", required = "required" } })
+                                    @Html.ValidationMessageFor(model => model.name, "", new { @class = "text-danger" })
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.gender, "Giới tính", htmlAttributes: new { @class = "control-label col-md-5" })
+                                    @Html.DropDownListFor(model => model.gender, selectList, new { @class = "form-control", required = "required" })
+                                    @Html.ValidationMessageFor(model => model.gender, "", new { @class = "text-danger" })
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.phone, "Điện thoại", htmlAttributes: new { @class = "control-label col-md-5" })
+                                    @Html.EditorFor(model => model.phone, new { htmlAttributes = new { @class = "form-control", required = "required", maxlength = "10" } })
+                                    @Html.ValidationMessageFor(model => model.phone, "", new { @class = "text-danger" })
+                                </div>
+
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.address, "Địa chỉ", htmlAttributes: new { @class = "control-label col-md-5" })
+                                    @Html.EditorFor(model => model.address, new { htmlAttributes = new { @class = "form-control", required = "required"} })
+                                    @Html.ValidationMessageFor(model => model.address, "", new { @class = "text-danger" })
+                                </div>
+
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-fill-out btn-block" name="register">ĐĂNG KÝ</button>
+                                </div>
+                            }
+                            <div class="form-note text-center">Bạn đã có tài khoản? <a href="@Url.Action("login", "Login")">Đăng nhập</a></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

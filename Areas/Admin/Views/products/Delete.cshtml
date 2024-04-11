@@ -1,0 +1,122 @@
+﻿@model CNWEB.Models.product
+
+@{
+    ViewBag.Title = "Delete";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="header bg-primary pb-6">
+    <div class="container-fluid">
+        <div class="header-body">
+            <div class="row align-items-center py-4">
+                <div class="col-lg-6 col-7">
+                    <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+                        <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                            <li class="breadcrumb-item"><a href="#"><i class="fas fa-home"></i></a></li>
+                            @Html.ActionLink("Danh sách nhà cung cấp", "Index", new { }, new { @class = "breadcrumb-item" })
+
+                            <li class="breadcrumb-item active" aria-current="page">Xóa</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="col-lg-6 col-5 text-right d-flex justify-content-end">
+                    <div class="align-self-center">
+                        @Html.ActionLink("Trở về", "Index", new { }, new { @class = "btn btn-sm btn-neutral" })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid mt--6">
+    <div class="row">
+        <div class="col">
+            <div class="card">
+                <div class="card-header border-0">
+                    <h3 class="mb-0">Xóa</h3>
+                    <h4 class="mt-2 text-danger">Bạn có chắc chắn muốn xóa sản phẩm này</h4>
+                </div>
+                <div class="d-flex justify-content-center">
+                    <div class="form-horizontal col-md-6">
+                        <dl class="dl-horizontal">
+
+
+                            <dt class="mt-4">
+                                Tên sản phẩm
+                            </dt>
+
+                            <dd class="mt-4">
+                                @Html.DisplayFor(model => model.name)
+                            </dd>
+
+                            <dt class="mt-4">
+                                Giá sản phẩm
+                            </dt>
+
+                            <dd class="mt-4">
+                                @Html.DisplayFor(model => model.price)
+                            </dd>
+
+                            <dt class="mt-4">
+                                Chiều rộng
+                            </dt>
+
+                            <dd class="mt-4">
+                                @Html.DisplayFor(model => model.width)
+                            </dd>
+
+                            <dt class="mt-4">
+                                Chiều cao
+                            </dt>
+
+                            <dd class="mt-4">
+                                @Html.DisplayFor(model => model.height)
+                            </dd>
+
+                            <dt class="mt-4">
+                                Mô tả
+                            </dt>
+
+                            <dd class="mt-4">
+                                @Html.DisplayFor(model => model.detail)
+                            </dd>
+                            <dt>
+                                Tên danh mục
+                            </dt>
+
+                            <dd class="mt-4">
+                                @Html.DisplayFor(model => model.category.name)
+                            </dd>
+
+                            <dt class="mt-4">
+                                Tên nhà cung cấp
+                            </dt>
+
+                            <dd class="mt-4">
+                                @Html.DisplayFor(model => model.manufacturer.name)
+                            </dd>
+
+                            <dt class="mt-4">
+                                Tên đơn vị tính
+                            </dt>
+
+                            <dd class="mt-4">
+                                @Html.DisplayFor(model => model.unit.name)
+                            </dd>
+                        </dl>
+
+                        @using (Html.BeginForm())
+                        {
+                            @Html.AntiForgeryToken()
+
+                            <div class="form-actions no-color">
+                                <input type="submit" value="Xóa" class="btn btn-default" />
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

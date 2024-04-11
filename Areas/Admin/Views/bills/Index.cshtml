@@ -1,0 +1,213 @@
+﻿@model IEnumerable<CNWEB.Models.bill>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="header bg-primary pb-6">
+
+    <div class="container-fluid">
+        <div class="header-body">
+            <div class="row align-items-center py-4">
+                <div class="col-lg-4 col-7">
+                    <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+                        <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                            <li class="breadcrumb-item"><a href="#"><i class="fas fa-home"></i></a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Danh sách hóa đơn</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="col-lg-8 col-3 text-left d-flex flex-column align-items-end">
+                    @using (Html.BeginForm("Index", "bills", FormMethod.Get, new { @class = "navbar-search navbar-search-light form-inline mr-sm-3", @id = "navbar-search-main" }))
+                    {
+                        <div class="form-group mb-0 mr-3">
+                            <div class="input-group input-group-alternative input-group-merge">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                </div>
+                                <input class="form-control" name="txtSearch" placeholder="Tìm kiếm..." type="text">
+                                <input type="submit" style="visibility: hidden" />
+                            </div>
+                        </div>
+                        <button type="button" class="close" data-action="search-close" data-target="#navbar-search-main" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    }
+                    @using (Html.BeginForm("Index", "bills", FormMethod.Get, new { @class = "navbar-search navbar-search-light mt-3 form-inline mr-sm-3", @id = "navbar-search-main" }))
+                    {
+                        <div class="d-flex">
+                            <div class="form-group mb-0 ml-5">
+                                <label for="exampleFormControlSelect1" class="text-white mr-2 font-weight-bold">Lọc trạng thái</label>
+                                <select class="form-control bg-white" name="fillter" id="exampleFormControlSelect1">
+                                    <option value="0">Mới</option>
+                                    <option value="1">Đã xác nhận</option>
+                                    <option value="2">Đã hủy</option>
+                                    <option value="3">Đóng gói sản phẩm</option>        
+                                    <option value="4">Đang chuyển hàng</option>
+                                    <option value="5">Thất bại</option>
+                                    <option value="6">Thành công</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-md-offset-2 col-md-10">
+                                    <input type="submit" value="Lọc" class="btn btn-default" />
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Page content -->
+<div class="container-fluid mt--6">
+    <div class="row">
+        <div class="col">
+            <div class="card">
+                <!-- Card header -->
+                <div class="card-header border-0">
+                    <h3 class="mb-0">Danh sách hóa đơn</h3>
+                </div>
+                <!-- Light table -->
+                <div class="table-responsive">
+                    <table class="table align-items-center table-flush">
+                        <thead class="thead-light">
+                            <tr>
+                                <th scope="col" class="sort" data-sort="STT">Số TT</th>
+                                <th scope="col" class="sort" data-sort="name">Mã đơn hàng</th>
+                                <th scope="col" class="sort" data-sort="date_create">Ngày tạo</th>
+                                <th scope="col" class="sort" data-sort="product">Sản phẩm</th>
+                                <th scope="col" class="sort" data-sort="total_price">Tổng tiền</th>
+                                <th scope="col" class="sort" data-sort="address">Địa chỉ giao</th>
+                                <th scope="col" class="sort" data-sort="note">Ghi chú</th>
+                                <th scope="col" class="sort" data-sort="state">Trạng thái</th>
+                                <th scope="col" class="sort" data-sort="customer">Khách hàng</th>
+                                <th scope="col"></th>
+                            </tr>
+                        </thead>
+                        <tbody class="list">
+                            @{
+                                int i = 1;
+                            }
+
+                            @foreach (var item in ViewBag.items)
+                            {
+                                <tr>
+                                    <th scope="row">
+                                        <div class="media-body">
+                                            <span class="name mb-0 text-sm">@i</span>
+                                        </div>
+                                    </th>
+                                    <td>
+                                        @item.id
+                                    </td>
+                                    <td>
+                                        @item.date_create
+                                    </td>
+                                    <td>
+                                        @foreach (var prouduct in @item.bill_detail)
+                                        {
+                                            <span class="font-weight-bold">@prouduct.product.name </span> <span>x</span><span class="text-right">@prouduct.quantity </span> <span class="text-right">( @prouduct.product.unit.name )</span>
+                                            <br />
+                                        }
+                                        </td>
+                                    <td>
+                                        @item.total_price
+                                    </td>
+                                    <td>
+                                        @item.address
+                                    </td>
+                                    <td>
+                                        @item.note
+                                    </td>
+                                    <td>
+                                        @using (Html.BeginForm("stateChange", "bills", FormMethod.Post, new { @class = "navbar-search navbar-search-light form-inline", @id = "navbar-search-main" }))
+                                        {
+                                            <div class="d-flex">
+                                                <div class="form-group mb-0">
+                                                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                                                    <input type="hidden" name="id" value="@item.id" />
+                                                    <select class="form-control border border-primary" name="state" id="exampleFormControlSelect1">
+                                                        <option value="0" @(@item.state == 0 ? "selected" : "")>Mới</option>
+                                                        <option value="1" @(@item.state == 1 ? "selected" : "")>Đã xác nhận</option>
+                                                        <option value="2" @(@item.state == 2 ? "selected" : "")>Đã hủy</option>
+                                                        <option value="3" @(@item.state == 3 ? "selected" : "")>Đóng gói sản phẩm</option>
+                                                        <option value="4" @(@item.state == 4 ? "selected" : "")>Đang chuyển hàng</option>
+                                                        <option value="5" @(@item.state == 5 ? "selected" : "")>Thất bại</option>
+                                                        <option value="6" @(@item.state == 6 ? "selected" : "")>Thành công</option>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <div class="col-md-offset-2 col-md-10">
+                                                        <input type="submit" value="Thay đổi" class="btn btn-default" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    </td>
+                                    <td>
+                                        @item.customer.name
+                                    </td>
+                                </tr>
+                                i++;
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Card footer -->
+                <div class="card-footer py-4">
+                    <nav aria-label="pagination">
+                        <ul class="pagination justify-content-end mb-0">
+
+                            @{
+                                int position;
+                                int pageCurrent = ViewBag.pageCurrent;
+                                string txtSearch = ViewBag.txtSearch;
+                                string fillter = ViewBag.fillter;
+                                float numSize = ViewBag.numSize;
+                                if (pageCurrent > 1)
+                                {
+                                    <li class="page-item">
+                                        <a class="page-link" href="@Url.Action("Index", "bills", new { txtSearch = (txtSearch != "" ? txtSearch : null), fillter = (fillter != "" ? fillter : null), page = pageCurrent-1 })" tabindex="-1">
+                                            <i class="fas fa-angle-left"></i>
+                                            <span class="sr-only">Previous</span>
+                                        </a>
+                                    </li>
+                                }
+
+                                for (position = 1; position <= numSize; position++)
+                                {
+
+                                    if (position == pageCurrent)
+                                    {
+                                        <li class="page-item active"><a class="page-link" href="@Url.Action("Index", "bills", new { txtSearch = (txtSearch != "" ? txtSearch : null), fillter = (fillter != "" ? fillter : null), page = position })">@position</a></li>
+                                    }
+
+                                    else
+                                    {
+                                        <li class="page-item"><a class="page-link" href="@Url.Action("Index", "bills", new { txtSearch = (txtSearch != "" ? txtSearch : null), fillter = (fillter != "" ? fillter : null), page = position })">@position</a></li>
+                                    }
+
+                                }
+                                if (pageCurrent > 0 && pageCurrent < numSize)
+                                {
+                                    <li class="page-item">
+                                        <a class="page-link" href="@Url.Action("Index", "bills", new { txtSearch = (txtSearch != "" ? txtSearch : null), fillter = (fillter != "" ? fillter : null), page = pageCurrent+1 })" tabindex="-1">
+                                            <i class="fas fa-angle-right"></i>
+                                            <span class="sr-only">Next</span>
+                                        </a>
+                                    </li>
+                                }
+
+                            }
+
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

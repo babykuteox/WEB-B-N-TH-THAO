@@ -1,0 +1,178 @@
+﻿@model IEnumerable<CNWEB.Models.employee>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="header bg-primary pb-6">
+
+    <div class="container-fluid">
+        <div class="header-body">
+            <div class="row align-items-center py-4">
+                <div class="col-lg-6 col-7">
+                    <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+                        <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                            <li class="breadcrumb-item"><a href="#"><i class="fas fa-home"></i></a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Danh sách nhân viên</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="col-lg-6 col-5 text-right d-flex justify-content-end">
+                    @using (Html.BeginForm("Index", "employees", FormMethod.Get, new { @class = "navbar-search navbar-search-light form-inline mr-sm-3", @id = "navbar-search-main" }))
+                    {
+                        <div class="form-group mb-0">
+                            <div class="input-group input-group-alternative input-group-merge">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                </div>
+                                <input class="form-control" name="txtSearch" placeholder="Tìm kiếm..." type="text">
+                                <input type="submit" style="visibility: hidden" />
+                            </div>
+                        </div>
+                        <button type="button" class="close" data-action="search-close" data-target="#navbar-search-main" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    }
+                    <div class="col-sm-6 align-self-center">
+                        @Html.ActionLink("Tạo mới", "Create", new { }, new { @class = "btn btn-sm btn-neutral" })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Page content -->
+<div class="container-fluid mt--6">
+    <div class="row">
+        <div class="col">
+            <div class="card">
+                <!-- Card header -->
+                <div class="card-header border-0">
+                    <h3 class="mb-0">Danh sách nhân viên</h3>
+                </div>
+                <!-- Light table -->
+                <div class="table-responsive">
+                    <table class="table align-items-center table-flush">
+                        <thead class="thead-light">
+                            <tr>
+                                <th scope="col" class="sort" data-sort="STT">Số TT</th>
+                                <th scope="col" class="sort" data-sort="name">Họ tên</th>
+                                <th scope="col" class="sort" data-sort="budget">Giới tính</th>
+                                <th scope="col" class="sort" data-sort="status">Điện thoại</th>
+                                <th scope="col" class="sort" data-sort="status">Địa chỉ</th>
+                                <th scope="col" class="sort" data-sort="status">Tài khoản</th>
+                                <th scope="col" class="sort" data-sort="status">Quyền</th>
+                                <th scope="col" class="sort" data-sort="status">Trạng thái</th>
+                                <th scope="col" class="sort text-center" data-sort="completion">Hành động</th>
+                                <th scope="col"></th>
+                            </tr>
+                        </thead>
+                        <tbody class="list">
+                            @{
+                                int i = 1;
+                            }
+
+                            @foreach (var item in ViewBag.items)
+                            {
+                            <tr>
+                                <th scope="row">
+                                    <div class="media-body">
+                                        <span class="name mb-0 text-sm">@i</span>
+                                    </div>
+                                </th>
+                                <td>
+                                    @item.name
+                                </td>
+                                <td>
+                                    @item.gender
+                                </td>
+                                <td>
+                                    0-@item.phone
+                                </td>
+                                <td>
+                                    @item.address
+                                </td>
+                                <td>
+                                    @item.account.user_name
+                                </td>
+                                <td>
+                                    @item.account.auth
+                                </td>
+                                <td>
+                                    @if (item.account.state == 0)
+                                    {
+                                        @("Không Khóa | ")
+                                        @Html.ActionLink(" ", "Ban", new { id = item.id }, new { @class = "fas fa-user text-primary" })
+                                    }
+                                    else
+                                    {
+                                        @("Khóa | ")
+                                        @Html.ActionLink(" ", "Ban", new { id = item.id }, new { @class = "fas fa-user-slash text-danger" })
+                                    }
+
+                                </td>
+
+                                <td class="text-center">
+                                    @Html.ActionLink(" ", "Edit", new { id = item.id }, new { @class = "fas fa-edit" }) |
+                                    @Html.ActionLink(" ", "Delete", new { id = item.id }, new { @class = "fas fa-trash text-danger" })
+                                </td>
+                            </tr>
+                                i++;
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Card footer -->
+                <div class="card-footer py-4">
+                    <nav aria-label="pagination">
+                        <ul class="pagination justify-content-end mb-0">
+
+                            @{
+                                int position;
+                                int pageCurrent = ViewBag.pageCurrent;
+                                string txtSearch = ViewBag.txtSearch;
+                                float numSize = ViewBag.numSize;
+                                if (pageCurrent > 1)
+                                {
+                                    <li class="page-item">
+                                        <a class="page-link" href="@Url.Action("Index", "employees", new { txtSearch = (txtSearch != "" ? txtSearch : null), page = pageCurrent-1 })" tabindex="-1">
+                                            <i class="fas fa-angle-left"></i>
+                                            <span class="sr-only">Previous</span>
+                                        </a>
+                                    </li>
+                                }
+
+                                for (position = 1; position <= numSize; position++)
+                                {
+
+                                    if (position == pageCurrent)
+                                    {
+                                        <li class="page-item active"><a class="page-link" href="@Url.Action("Index", "employees", new { txtSearch = (txtSearch != "" ? txtSearch : null), page = position })">@position</a></li>
+                                    }
+
+                                    else
+                                    {
+                                        <li class="page-item"><a class="page-link" href="@Url.Action("Index", "employees", new { txtSearch = (txtSearch != "" ? txtSearch : null), page = position })">@position</a></li>
+                                    }
+
+                                }
+                                if (pageCurrent > 0 && pageCurrent < numSize)
+                                {
+                                    <li class="page-item">
+                                        <a class="page-link" href="@Url.Action("Index", "employees", new { txtSearch = (txtSearch != "" ? txtSearch : null), page = pageCurrent+1 })" tabindex="-1">
+                                            <i class="fas fa-angle-right"></i>
+                                            <span class="sr-only">Next</span>
+                                        </a>
+                                    </li>
+                                }
+
+                            }
+
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

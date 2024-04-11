@@ -1,0 +1,167 @@
+﻿
+@{
+    ViewBag.Title = "CheckOut";
+    Layout = "~/Areas/Index/Views/Shared/_Layout.cshtml";
+}
+
+<header class="header_wrap fixed-top header_with_topbar">
+    <div class="bottom_header dark_skin main_menu_uppercase">
+        <div class="container">
+            <nav class="navbar navbar-expand-lg">
+                <a class="navbar-brand font-weight-bold text-center" style="font-size:20px; color: #FF324D" href="@Url.Action("Index", "Index")">
+                    CỬA HÀNG <br /> GIA DỤNG
+                </a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-expanded="false">
+                    <span class="ion-android-menu"></span>
+                </button>
+                <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
+                    <ul class="navbar-nav">
+                        <li><a class="nav-link nav_item" href="@Url.Action("Index", "Index")">Trang chủ</a></li>
+                        <li><a class="nav-link nav_item" href="#">Liên hệ</a></li>
+                    </ul>
+                </div>
+                <ul class="navbar-nav attr-nav align-items-center">
+                    <li><a href="@Url.Action("Account", "Index")" class="nav-link"><i class="linearicons-user"></i></a></li>
+                    <li class="dropdown cart_dropdown">
+                        <a class="nav-link cart_trigger" href="#" data-toggle="dropdown"><i class="linearicons-cart"></i><span class="cart_count">@ViewBag.listCart.Count</span></a>
+                        <div class="cart_box dropdown-menu dropdown-menu-right">
+                            <ul class="cart_list">
+                                @{ double totalPrice = 0; }
+                                @foreach (var item in ViewBag.listCart)
+                                {
+                                    totalPrice += item.quantity * item.product.price;
+                                <li>
+                                    <a href="@Url.Action("Remove", "Index", new { id = @item.product.id, view = "checkout" })" class="item_remove"><i class="ion-close"></i></a>
+                                    @{ String path = HttpContext.Current.Request.Url.ToString();
+                                        path = path.Substring(0, 29);
+                                        path = path + item.product.image_main;}
+                                    <a href="#"><img src="@path" alt="cart_thumb1">@item.product.name</a>
+                                    <span class="cart_quantity"> @item.quantity x <span class="cart_amount">@item.product.price.ToString("N0")</span><span class="price_symbole"> vnđ</span></span>
+                                </li>
+                                }
+                            </ul>
+                            <div class="cart_footer">
+                                <p class="cart_total"><strong>Tổng tiền sản phẩm:</strong> <span class="cart_price">@totalPrice.ToString("N0")</span><span class="price_symbole"> vnđ</span></p>
+                                <p class="cart_buttons"><a href="@Url.Action("Cart", "Index")" class="btn btn-fill-line view-cart">GIỎ HÀNG</a><a href="@Url.Action("CheckOut", "Index")" class="btn btn-fill-out checkout">THANH TOÁN</a></p>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</header>
+
+<div class="breadcrumb_section bg_gray page-title-mini">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <div class="page-title">
+                    <h1>Thanh toán</h1>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <ol class="breadcrumb justify-content-md-end">
+                    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Index")">Trang chủ</a></li>
+                    <li class="breadcrumb-item active">Thanh toán</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="main_content">
+    <div class="section">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="heading_s1">
+                        <h4>Thông tin giao hàng</h4>
+                    </div>
+                    @using (Html.BeginForm("CheckOut", "Index", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        <input type="hidden" name="total" value="@totalPrice" />
+                        <div class="form-group">
+                            <input type="text" required disabled class="form-control" name="name" placeholder="Họ và tên *" value="@ViewBag.customer.name" />
+                        </div>
+                        <div class="form-group">
+                            <input type="text" required class="form-control" name="address" placeholder="Địa chỉ *" value="@ViewBag.customer.name" />
+                        </div>
+                        <div class="form-group">
+                            <input type="text" required disabled class="form-control" name="phone" placeholder="Điện thoại *" value="0 @ViewBag.customer.phone" />
+                        </div>
+                        <div class="heading_s1">
+                            <h4>Ghi chú bổ sung</h4>
+                        </div>
+                        <div class="form-group mb-0">
+                            <textarea rows="6" class="form-control" placeholder="Thông tin bổ sung khi giao hàng" name="note"></textarea>
+                        </div>
+                         <input type="submit" class="btn bg-dark btn-fill-out btn-block mt-3" value="Tiến hành đặt hàng"/>
+                    }
+                </div>
+                <div class="col-md-6">
+                    <div class="order_review">
+                        <div class="heading_s1">
+                            <h4>Đơn hàng của bạn</h4>
+                        </div>
+                        <div class="table-responsive order_table">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Sản phẩm</th>
+                                        <th>Số tiền</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+
+                                    @{ double subTotal = 0;}
+                                    @foreach (var item in ViewBag.listCart)
+                                    {
+                                        subTotal = item.quantity * item.product.price;
+                                        <tr>
+                                            <td>@item.product.name <span class="product-qty">x @item.quantity</span></td>
+                                            <td>@subTotal.ToString("N0") vnđ</td>
+                                        </tr>
+                                    }
+
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th>Tổng tiền sản phẩm</th>
+                                        <td class="product-subtotal">@totalPrice.ToString("N0") vnđ</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Phí vận chuyển</th>
+                                        <td>20,000 vnđ</td>
+                                    </tr>
+                                    <tr>
+                                        @{totalPrice += 20000;}
+                                        <th>Tổng thanh toán</th>
+                                        <td class="product-subtotal">@totalPrice.ToString("N0") vnđ</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                        <div class="payment_method">
+                            <div class="heading_s1">
+                                <h4>Hình thức thanh toán</h4>
+                            </div>
+                            <div class="payment_option">
+                                <div class="custome-radio">
+                                    <input class="form-check-input" type="radio" name="payment_option" id="exampleRadios3" value="option3" checked />
+                                    <label class="form-check-label" for="exampleRadios3">COD</label>
+                                    <p data-method="option3" class="payment-text">Thanh toán khi giao hàng</p>
+                                </div>
+
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
